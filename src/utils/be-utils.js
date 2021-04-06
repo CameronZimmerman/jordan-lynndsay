@@ -1,11 +1,17 @@
 import request from "superagent";
 
 const addUrl = async (url) => {
-  await request.post(process.env.BE_URL).send({ url });
+  await request.post("http://localhost:9876/api/urls").send({ url });
 };
 
 const deleteUrl = async (url) => {
-  await request.delete(`${process.env.BE_URL}/${url}`);
+  console.log(url);
+  await request.delete(`http://localhost:9876/api/urls/${url}`);
 };
 
-export { addUrl, deleteUrl };
+const getUrls = async () => {
+  const res = await request.get("http://localhost:9876/api/urls");
+  return res.body || [];
+};
+
+export { addUrl, deleteUrl, getUrls };

@@ -59,14 +59,10 @@ describe("route tests", () => {
 
   test("should delete a url by id", async () => {
     await request(app).delete("/api/urls/tset.jpg");
+    await request(app).delete("/api/urls/dog.jpg");
 
     const getRes = await request(app).get("/api/urls");
 
-    expect(getRes.body).toEqual([
-      {
-        id: 2,
-        url: "dog.jpg",
-      },
-    ]);
+    expect(getRes.body).toEqual([]);
   });
 });

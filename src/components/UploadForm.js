@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
 import { projectStorage } from "../firebase/config.js";
-
+import { addUrl } from "../utils/be-utils.js";
 const types = ["image/png", "image/jpeg"];
 
 export default class UploadForm extends Component {
@@ -10,9 +10,16 @@ export default class UploadForm extends Component {
     error: null,
     url: null,
   };
-  componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevProps, prevState) {
     if (prevState.file !== this.state.file) {
-      this.uploadHandler();
+      await this.uploadHandler();
+      await addUrl(this.state.url);
+      // try {
+      //   await addUrl(this.state.url);
+      // } catch (error) {
+      //   this.setState({ error });
+      // }
+      await this.props.fetchUrls();
     }
   }
   uploadHandler = async () => {
