@@ -1,62 +1,72 @@
-const client = require('../pg/client.js')
-const setup = require('../pg/setup.js')
-const request = require('supertest')
-const app = require('../lib/app.js')
+const client = require("../pg/client.js");
+const setup = require("../pg/setup.js");
+const request = require("supertest");
+const app = require("../lib/app.js");
 
-describe('route tests', () => {
-  beforeEach(() => {
-    return setup()
-  })
+const runSetup = () => {
+  require("child_process").fork("../pg/setup.js");
+};
 
-  beforeEach(async() => {
-    return await request(app)
-      .post('/api/comments')
-      .send({comment: 'seed data'})
-  })
-  
-  test('should create a comment, respond with its content and send an email alert', () => {
+describe("route tests", () => {
+  beforeAll(() => {
+    return runSetup();
+  });
+
+  beforeAll(async () => {
+    return await request(app).post("/api/urls").send({ url: "test.jpg" });
+  });
+
+  test("should create a url, respond with its content", () => {
     return request(app)
-      .post('/api/comments')
-      .send({comment: 'i love your dog'})
+      .post("/api/urls")
+      .send({ url: "dog.jpg" })
       .then((res) => {
         expect(res.body).toEqual({
           id: 2,
-          comment: 'i love your dog'
-        })
-      })
-  })
+          url: "dog.jpg",
+        });
+      });
+  });
 
-  test('should grab all comments', () => {
+  test("should grab all urls", () => {
     return request(app)
-      .get('/api/comments')
+      .get("/api/urls")
       .then((res) => {
-        expect(res.body).toEqual(
-          [{
+        expect(res.body).toEqual([
+          {
             id: 1,
-            comment: 'seed data'
-          }]
-        )
-      })
-  })
+            url: "test.jpg",
+          },
+          {
+            id: 2,
+            url: "dog.jpg",
+          },
+        ]);
+      });
+  });
 
-  test('should update a comment by id, respond with its content and send an email alert', () => {
+  test("should update a url by id, respond with its content", () => {
     return request(app)
-      .put('/api/comments/1')
-      .send({comment: 'i wuv your dog'})
+      .put("/api/urls/1")
+      .send({ url: "tset.jpg" })
       .then((res) => {
         expect(res.body).toEqual({
           id: 1,
-          comment: 'i wuv your dog'
-        })
-      })
-  })
+          url: "tset.jpg",
+        });
+      });
+  });
 
-  test('should delete a comment by id, respond with its content and send an email alert', async () => {
-    await request(app)
-    .delete('/api/comments/1')
+  test("should delete a url by id", async () => {
+    await request(app).delete("/api/urls/1");
 
-    const getRes = await request(app).get('/api/comments')
+    const getRes = await request(app).get("/api/urls");
 
-    expect(getRes.body).toEqual([])
-  })
-})
+    expect(getRes.body).toEqual([
+      {
+        id: 2,
+        url: "dog.jpg",
+      },
+    ]);
+  });
+});
