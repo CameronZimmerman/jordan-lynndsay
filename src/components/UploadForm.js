@@ -23,6 +23,7 @@ export default class UploadForm extends Component {
     const url = await storageRef.getDownloadURL();
     this.setState({ url });
   };
+
   fileHandler = (e) => {
     let file = e.target.files[0];
     if (file && types.includes(file.type)) {

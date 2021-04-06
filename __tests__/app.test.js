@@ -58,7 +58,7 @@ describe("route tests", () => {
   });
 
   test("should delete a url by id", async () => {
-    await request(app).delete("/api/urls/1");
+    await request(app).delete("/api/urls/tset.jpg");
 
     const getRes = await request(app).get("/api/urls");
 
